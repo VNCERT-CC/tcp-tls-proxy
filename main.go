@@ -17,13 +17,13 @@ var remoteAddr = flag.String(`remote`, `127.0.0.1:443`, `Remote address. Eg: 127
 var skipVerify = flag.Bool("tls-skip-verify", true, "Skip verify TLS Server")
 
 func proxyConn(localConn net.Conn) {
+	defer localConn.Close()
 	remoteConn, err := getRemoteConn()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer remoteConn.Close()
-	defer localConn.Close()
 	go io.Copy(localConn, remoteConn)
 	io.Copy(remoteConn, localConn)
 }
